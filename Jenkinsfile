@@ -19,7 +19,7 @@ node('master')
         sh label: '', script: 'java -jar /home/ubuntu/.jenkins/workspace/Scripted_pipeline/testing.jar'
     }
      
-    stage (' continuous delivery')
+    stage ('continuous delivery')
     {
          input message: 'waiting approval from DM ', submitter: 'Srinivas'
          sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/Scripted_pipeline/webapp/target/webapp.war ubuntu@172.31.40.241:/var/lib/tomcat8/webapps/prodenv.war'
