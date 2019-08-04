@@ -9,7 +9,7 @@ node('master')
         sh label: '', script: 'mvn package'
     }
    
-    stage (' continuous deploy')
+    stage ('continuous deploy')
     {
        sh label: '', script: '''scp /home/ubuntu/.jenkins/workspace/Scripted_pipeline/webapp/target/webapp.war ubuntu@172.31.47.254:/var/lib/tomcat8/webapps/testenv.war'''
     }
