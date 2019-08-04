@@ -1,0 +1,94 @@
+pipeline
+{
+    agent any 
+    stages
+    {
+        stage('ContDownload')
+        {
+            steps
+            {
+                script
+                {
+                  try
+                   {
+                      git 'https://github.com/katakamlokesh/maven.git'
+                   }
+                   catch(Exception e)
+                   {
+                       mail bcc: '', body: 'Jenkins is unable to download from git hub', cc: '', from: '', replyTo: '', subject: 'Jenkins facing isse with Git', to: 'gitadmin@outlook.com'
+                      exit(1)
+                   }
+                      
+                }
+            }
+        }
+        stage('ContBuild')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                        sh 'mvn package'
+                    }
+                    catch (Exception e)
+                    {
+                        mail bcc: '', body: 'Jenkins is unable to build code because of Nagoor Basha', from: '', replyTo: '', subject: 'Jenkins facing isse with Git', to: 'projects2488@gmail.com'
+                      exit(1)
+                    }
+                }
+                    
+            }
+        }
+        stage('ContDeployment')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                         sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/Declarative_pipeline/webapp/target/webapp.war ubuntu@172.31.47.254:/var/lib/tomcat8/webapps/testenv.war'
+                    }
+                    catch(Exception e)
+                    {
+           mail bcc: '', body: 'unable to deploy code because of Nagoor Basha', from: '', replyTo: '', subject: 'Jenkins facing isse with Git', to: 'projects2488@gmail.com'
+                      exit(1)           
+                    }
+                }
+            }
+        }
+        stage('ContTesting')
+        {
+            steps
+            {
+                script
+                {
+                    try
+                    {
+                     git 'https://github.com/katakamlokesh/FunctionalTesting.git'
+                      sh label: '', script: 'java -jar /home/ubuntu/.jenkins/workspace/Declarative_pipeline/testing.jar'
+                    }
+                    catch(Exception e)
+                    {
+                      mail bcc: '', body: 'testing failed ', from: '', replyTo: '', subject: 'Jenkins unable to do testing due to lokesh', to: 'projects2488@gmail.com'
+                      exit(1)
+                    }
+                }
+            }
+        }
+    }
+    post
+    {
+             success
+             {
+               input message: 'Waiting for approval from DM', submitter: 'Srinivas'
+               sh label: '', script: 'scp /home/ubuntu/.jenkins/workspace/Declarative_pipeline/webapp/target/webapp.war ubuntu@172.31.40.241:/var/lib/tomcat8/webapps/prodenv.war'
+             }
+            failure
+             {
+              mail bcc: '', body: 'prjocet are failed ', cc: '', from: '', replyTo: 'sknagur306@gmail.com', subject: 'job failed ', to: 'lokeshkatakam3@gmail.com'            
+             }
+    }
+}
